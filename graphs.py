@@ -200,7 +200,7 @@ def create_container_for_each_sentiment(df, df_empty = None):
          c1.plotly_chart(fig, use_container_width=True)
 
          # group by day and get the average score
-         df['date_for_filter'] = pd.to_datetime(df['date_for_filter'])
+         df.loc[:,'date_for_filter'] = pd.to_datetime(df['date_for_filter'])
          df_day = df.groupby(['date_for_filter']).agg({'Average Score': 'mean'}).reset_index()
 
          fig = go.Figure()
