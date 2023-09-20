@@ -192,9 +192,9 @@ def rescoring(df):
                        1: 1
                }
    columns_to_rescore = ['Feedback: Food Rating', 'Feedback: Drink Rating', 'Feedback: Service Rating', 'Feedback: Ambience Rating', 'Overall Rating']
-   df.loc[:, columns_to_rescore] = df.loc[:,columns_to_rescore].replace('', 0)   # now transform the values into flaot
-   df.loc[:, columns_to_rescore] = df.loc[:columns_to_rescore].astype(float)  
-   df.loc[:, columns_to_rescore] = df.loc[:columns_to_rescore].replace(value_map)
+   df.loc[:, columns_to_rescore] = df[columns_to_rescore].replace('', 0)   # now transform the values into flaot
+   df.loc[:, columns_to_rescore] = df[columns_to_rescore].astype(float)  
+   df.loc[:, columns_to_rescore] = df[columns_to_rescore].replace(value_map)
    return df
 
 def lambda_for_menu_item(x):
