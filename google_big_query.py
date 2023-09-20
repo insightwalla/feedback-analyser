@@ -70,7 +70,7 @@ class TransformationGoogleBigQuery:
         # keep only duration > 5 minutes and < 360 minutes
         df = df[(df['Duration'] > 5) & (df['Duration'] < 360)]
 
-        df['Hour_Close_Check'] = df.apply(lambda x: x['Hour_Close_Check'] + 24 if x['Hour_Close_Check'] < x['Hour_Start_Check'] else x['Hour_Close_Check'], axis=1)
+        df[:,'Hour_Close_Check'] = df.apply(lambda x: x['Hour_Close_Check'] + 24 if x['Hour_Close_Check'] < x['Hour_Start_Check'] else x['Hour_Close_Check'], axis=1)
 
         # Zero-fill hour and minute columns
         #df['Hour_Start_Check'] = df['Hour_Start_Check'].astype(str).str.zfill(2)
