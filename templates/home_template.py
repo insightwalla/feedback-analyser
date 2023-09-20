@@ -484,7 +484,7 @@ class FeedBackHelper:
       self.df, self.db_name = self.filter_by_café(restaurant_name, lookUpCafe)
 
       IsEmpty = self.df.shape[0] == 0
-      st.write(IsEmpty)
+      #st.write(IsEmpty)
       if IsEmpty:
          self.UploadNewData()
 
@@ -535,12 +535,12 @@ class FeedBackHelper:
          self.df_with_review = self.df_with_review[(self.df_with_review['Sentiment'] == 'NEGATIVE') & (self.df_with_review['Label: Dishoom'] == '')]
 
       self.to_plot = self.df_with_review
-      st.write(self.db_name)
+      #st.write(self.db_name)
       name_choosen_db = 'pages/' + restaurant_name + '.db' if restaurant_name != '*' else 'pages/' + self.db_name + '.db'
 
       if self.name_user == 'AllEars':
          if restaurant_name != '*':
-            st.write(f'Restaurant: {restaurant_name}')
+            #st.write(f'Restaurant: {restaurant_name}')
             res_name_db = list(lookUpCafe.keys())[list(lookUpCafe.values()).index(restaurant_name)]
             name_choosen_db = 'pages/' + res_name_db + '.db'
             button_delete_single_res = st.sidebar.button('🗑', use_container_width=True, key = 'delete_single')
@@ -549,7 +549,7 @@ class FeedBackHelper:
                   db = Database_Manager(name_choosen_db)
                   db.delete_all()
                   self.df = self.db_main_manager.get_main_db_from_venue()
-                  st.write(self.df)
+                  #st.write(self.df)
 
          elif restaurant_name == '*': # works fine
             st.write('ALL RESTAURANTS : * detected')
