@@ -66,7 +66,7 @@ lookUpCafe = {
    }
 # need 20 emojis
 list_of_emojis = [
-   '🇮🇳',
+   '🌏',
    '🌶️',
    '🍛',
    '🍚',
