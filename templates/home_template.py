@@ -552,7 +552,7 @@ class FeedBackHelper:
                   #st.write(self.df)
 
          elif restaurant_name == '*': # works fine
-            st.write('ALL RESTAURANTS : * detected')
+            #st.write('ALL RESTAURANTS : * detected')
             button_delete_everything = st.sidebar.button('🗑', use_container_width=True, key = 'delete_all')
             if button_delete_everything:
                   db_main = Database_Manager(self.db_name)
