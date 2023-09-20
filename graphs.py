@@ -94,16 +94,16 @@ def create_graph_keywords_as_a_whole(df, container = None):
 
 def create_timeseries_graph(df, container):
    # check that
-   df['Date Submitted'] = pd.to_datetime(df['Date Submitted'])
-   df['Date Submitted'] = df['Date Submitted'].dt.date
+   df[:,'Date Submitted'] = pd.to_datetime(df['Date Submitted'])
+   df[:,'Date Submitted'] = df['Date Submitted'].dt.date
    # same for reservation date
-   df['Reservation: Date'] = pd.to_datetime(df['Reservation: Date'])
-   df['Reservation: Date'] = df['Reservation: Date'].dt.date
+   df[:,'Reservation: Date'] = pd.to_datetime(df['Reservation: Date'])
+   df[:,'Reservation: Date'] = df['Reservation: Date'].dt.date
 
    # create a new column called date_to_plot, is the reseravtion date if it is not empty, otherwise is the date submitted
-   df['Date to plot'] = df['Reservation: Date'].fillna(df['Date Submitted'])
-   df['Date to plot'] = pd.to_datetime(df['Date to plot'])
-   df['Date to plot'] = df['Date to plot'].dt.date
+   df[:,'Date to plot'] = df['Reservation: Date'].fillna(df['Date Submitted'])
+   df[:,'Date to plot'] = pd.to_datetime(df['Date to plot'])
+   df[:,'Date to plot'] = df['Date to plot'].dt.date
 
    # take off empty details   
    df = df[df['Details'] != '']
