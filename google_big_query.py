@@ -77,10 +77,14 @@ class TransformationGoogleBigQuery:
         #df['Minute_Start_Check'] = df['Minute_Start_Check'].astype(str).str.zfill(2)
         #df['Hour_Close_Check'] = df['Hour_Close_Check'].astype(str).str.zfill(2)
         #df['Minute_Close_Check'] = df['Minute_Close_Check'].astype(str).str.zfill(2)
-        df.loc[:, 'Hour_Start_Check'] = df['Hour_Start_Check'].astype(str).str.zfill(2)  
-        df.loc[:, 'Minute_Start_Check'] = df['Minute_Start_Check'].astype(str).str.zfill(2)
-        df.loc[:, 'Hour_Close_Check'] = df['Hour_Close_Check'].astype(str).str.zfill(2)
-        df.loc[:, 'Minute_Close_Check'] = df['Minute_Close_Check'].astype(str).str.zfill(2)
+        # df.loc[:, 'Hour_Start_Check'] = df['Hour_Start_Check'].astype(str).str.zfill(2)  
+        # df.loc[:, 'Minute_Start_Check'] = df['Minute_Start_Check'].astype(str).str.zfill(2)
+        # df.loc[:, 'Hour_Close_Check'] = df['Hour_Close_Check'].astype(str).str.zfill(2)
+        # df.loc[:, 'Minute_Close_Check'] = df['Minute_Close_Check'].astype(str).str.zfill(2)
+        df.loc[:, 'Hour_Start_Check'] = df['Hour_Start_Check'].astype(str).str.zfill(2).copy()
+        df.loc[:, 'Minute_Start_Check'] = df['Minute_Start_Check'].astype(str).str.zfill(2).copy()
+        df.loc[:, 'Hour_Close_Check'] = df['Hour_Close_Check'].astype(str).str.zfill(2).copy()
+        df.loc[:, 'Minute_Close_Check'] = df['Minute_Close_Check'].astype(str).str.zfill(2).copy()
 
         # modify hour start check if < 7 
         df.loc[df['Hour_Start_Check'].astype(int) < 4, 'Hour_Start_Check'] = (df['Hour_Start_Check'].astype(int) + 24).astype(str).str.zfill(2)
