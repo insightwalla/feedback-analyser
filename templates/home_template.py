@@ -274,7 +274,6 @@ class FeedBackHelper:
             # save to database
             self.df = self.save_to_db()
             self.db_main_manager.create_database_for_each_venue()
-        st.stop()
         return self.df
     
     def _preprocessing(self, data):
