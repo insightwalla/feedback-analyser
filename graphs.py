@@ -94,8 +94,8 @@ def create_graph_keywords_as_a_whole(df, container = None):
 
 def create_timeseries_graph(df, container):
    # check that
-   df[:,'Date Submitted'] = pd.to_datetime(df['Date Submitted'])
-   df[:,'Date Submitted'] = df['Date Submitted'].dt.date
+   df['Date Submitted'] = pd.to_datetime(df['Date Submitted'])
+   df['Date Submitted'] = df['Date Submitted'].dt.date
    # same for reservation date
    df['Reservation: Date'] = pd.to_datetime(df['Reservation: Date'])
    df['Reservation: Date'] = df['Reservation: Date'].dt.date
