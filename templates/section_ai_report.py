@@ -310,7 +310,7 @@ def final_page_ai(name_db :str, section: str, name_user: str):
             </script>
             '''
 
-            st.components.v1.html(js)
+        st.components.v1.html(js)
         button_question_1 = st.sidebar.button('Generate Report', use_container_width= True)
         button_question_2 = st.sidebar.button('Find the worst reviews', use_container_width= True)
         button_question_3 = st.sidebar.button('Find the best reviews', use_container_width= True)
