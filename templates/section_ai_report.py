@@ -339,7 +339,9 @@ def final_page_ai(name_db :str, section: str, name_user: str):
                 else:
                     st.write(user_template.replace(
                         "{{MSG}}", message.content), unsafe_allow_html=True)
-    
+        
+            st.components.v1.html(js)
+
         container = st.empty()
         c1,c2 = st.sidebar.columns(2)
         if c1.button("Start Chat", use_container_width= True):
