@@ -340,7 +340,7 @@ def final_page_ai(name_db :str, section: str, name_user: str):
                     st.write(user_template.replace(
                         "{{MSG}}", message.content), unsafe_allow_html=True)
         
-            st.components.v1.html(js)
+        st.components.v1.html(js)
 
         container = st.empty()
         c1,c2 = st.sidebar.columns(2)
@@ -357,5 +357,6 @@ def final_page_ai(name_db :str, section: str, name_user: str):
             st.session_state.conversation = None
             st.session_state.chat_history = None
 
- 
+        st.components.v1.html(js)
+
     main()
