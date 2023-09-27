@@ -300,17 +300,8 @@ def final_page_ai(name_db :str, section: str, name_user: str):
             st.session_state.conversation = None
         if "chat_history" not in st.session_state:
             st.session_state.chat_history = None
-
         st.write(css, unsafe_allow_html=True)
-        js = '''
-            <script>
-                var body = window.parent.document.querySelector(".main");
-                console.log(body);
-                body.scrollTop = 0;
-            </script>
-            '''
 
-        st.components.v1.html(js)
         button_question_1 = st.sidebar.button('Generate Report', use_container_width= True)
         button_question_2 = st.sidebar.button('Find the worst reviews', use_container_width= True)
         button_question_3 = st.sidebar.button('Find the best reviews', use_container_width= True)
@@ -339,9 +330,7 @@ def final_page_ai(name_db :str, section: str, name_user: str):
                 else:
                     st.write(user_template.replace(
                         "{{MSG}}", message.content), unsafe_allow_html=True)
-        
-        st.components.v1.html(js)
-
+    
         container = st.empty()
         c1,c2 = st.sidebar.columns(2)
         if c1.button("Start Chat", use_container_width= True):
@@ -357,6 +346,13 @@ def final_page_ai(name_db :str, section: str, name_user: str):
             st.session_state.conversation = None
             st.session_state.chat_history = None
 
-        st.components.v1.html(js)
+    js = '''
+    <script>
+        var body = window.parent.document.querySelector(".main");
+        console.log(body);
+        body.scrollTop = 0;
+    </script>
+    '''
 
+    st.components.v1.html(js)
     main()
