@@ -186,7 +186,6 @@ def final_page_ai(name_db :str, section: str, name_user: str):
 
 
 from htmlTemplates import css, bot_template, user_template
-
 import time
 import streamlit as st
 from typing import Any, List, Dict
@@ -224,8 +223,6 @@ class MyStream(StreamingStdOutCallbackHandler):
     def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
         """Run when LLM ends running."""
         self.s = ''
-        self.o.write(bot_template.replace(
-                        "{{MSG}}", response.text), unsafe_allow_html=True)
     
 
 def final_page_ai(name_db :str, section: str, name_user: str):
@@ -274,8 +271,7 @@ def final_page_ai(name_db :str, section: str, name_user: str):
         vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
         return vectorstore
 
-    def get_conversation_chain(vectorstore, container):
-        llm = ChatOpenAI(streaming=True, callbacks=[MyStream(container)], openai_api_key= st.secrets["OPENAI_API_KEY"])
+    def get_conversation_chain(vectorstore, llm):
         # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
         memory = ConversationBufferMemory(
             memory_key='chat_history', return_messages=True)
@@ -332,6 +328,8 @@ def final_page_ai(name_db :str, section: str, name_user: str):
                         "{{MSG}}", message.content), unsafe_allow_html=True)
     
         container = st.empty()
+        llm = ChatOpenAI(streaming=True, callbacks=[MyStream(container)], openai_api_key= st.secrets["OPENAI_API_KEY"])
+
         c1,c2 = st.sidebar.columns(2)
         if c1.button("Start Chat", use_container_width= True):
             with st.spinner("Processing"):
@@ -340,7 +338,7 @@ def final_page_ai(name_db :str, section: str, name_user: str):
                 text_chunks = get_text_chunks(raw_text)
                 vectorstore = get_vectorstore(text_chunks)
                 st.session_state.conversation = get_conversation_chain(
-                        vectorstore, container)
+                        vectorstore, llm)
         # handle reset
         if c2.button("Reset", use_container_width= True, type="primary"):
             st.session_state.conversation = None
