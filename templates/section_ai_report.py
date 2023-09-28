@@ -354,7 +354,7 @@ def final_page_ai_streaming(name_db :str, section: str, name_user: str):
 
 
 def final_page_ai(name_db :str, section: str, name_user: str):
-    if st.sidebar.toggle('Use Streaming'):
+    if st.sidebar.toggle('Use Streaming', value=True):
         final_page_ai_streaming(name_db, section, name_user)
     else:
         final_page_ai_regular(name_db, section, name_user)
