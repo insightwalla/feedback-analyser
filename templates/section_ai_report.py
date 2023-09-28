@@ -65,7 +65,7 @@ def final_page_ai(name_db: str, section: str, name_user: str):
                         )
             st.write(completion.choices[0].message['content'])
 
-def final_page_ai(name_db :str, section: str, name_user: str):
+def final_page_ai_regular(name_db :str, section: str, name_user: str):
     import streamlit as st
 
     from dotenv import load_dotenv
@@ -184,50 +184,20 @@ def final_page_ai(name_db :str, section: str, name_user: str):
                         "{{MSG}}", message.content), unsafe_allow_html=True)
     main()
 
-
-from htmlTemplates import css, bot_template, user_template
-import time
-import streamlit as st
-from typing import Any, List, Dict
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import (
-    HumanMessage,
-)
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import AgentAction, AgentFinish, LLMResult
-
-class MyStream(StreamingStdOutCallbackHandler):
-    def __init__(self, container) -> None:
-        super().__init__()
-        self.o =  container
-        self.container = container
-        self.s = ''
-
-    def on_llm_start(
-        self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
-    ) -> None:
-        """Run when LLM starts running."""
-        del self.o
-        self.s = ''
-        self.o =  self.container
-        
-    def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
-        """Run on new LLM token. Only available when streaming is enabled."""
-        # only the last token
-        self.s += token
-        self.o.write(user_template.replace(
-                        "{{MSG}}", self.s), unsafe_allow_html=True)
-        time.sleep(0.05)
-
-    def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
-        """Run when LLM ends running."""
-        self.s = ''
-    
-
-def final_page_ai(name_db :str, section: str, name_user: str):
+def final_page_ai_streaming(name_db :str, section: str, name_user: str):
     import streamlit as st
+    import time
+    import streamlit as st
+    from typing import Any, List, Dict
+    from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+    from langchain.chat_models import ChatOpenAI
+    from langchain.schema import (
+        HumanMessage,
+    )
+    from langchain.chat_models import ChatOpenAI
+    from langchain.schema import AgentAction, AgentFinish, LLMResult
 
+    
     from dotenv import load_dotenv
     from langchain.text_splitter import CharacterTextSplitter
     from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
@@ -238,6 +208,33 @@ def final_page_ai(name_db :str, section: str, name_user: str):
     from langchain.llms import HuggingFaceHub
     from htmlTemplates import css, bot_template, user_template
     
+    class MyStream(StreamingStdOutCallbackHandler):
+        def __init__(self, container) -> None:
+            super().__init__()
+            self.o =  container
+            self.container = container
+            self.s = ''
+
+        def on_llm_start(
+            self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
+        ) -> None:
+            """Run when LLM starts running."""
+            del self.o
+            self.s = ''
+            self.o =  self.container
+            
+        def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
+            """Run on new LLM token. Only available when streaming is enabled."""
+            # only the last token
+            self.s += token
+            self.o.write(user_template.replace(
+                            "{{MSG}}", self.s), unsafe_allow_html=True)
+            time.sleep(0.05)
+
+        def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
+            """Run when LLM ends running."""
+            self.s = ''    
+
     # set openai key
     def get_pdf_text():
         data = Database_Manager(name_db).get_main_db_from_venue()
@@ -326,7 +323,7 @@ def final_page_ai(name_db :str, section: str, name_user: str):
                 else:
                     st.write(user_template.replace(
                         "{{MSG}}", message.content), unsafe_allow_html=True)
-    
+        
         container = st.empty()
         llm = ChatOpenAI(streaming=True, callbacks=[MyStream(container)], openai_api_key= st.secrets["OPENAI_API_KEY"])
 
@@ -354,3 +351,11 @@ def final_page_ai(name_db :str, section: str, name_user: str):
 
     st.components.v1.html(js)
     main()
+
+
+def final_page_ai(name_db :str, section: str, name_user: str):
+    if st.sidebar.toggle('Use Streaming'):
+        final_page_ai_streaming(name_db, section, name_user)
+    else:
+        final_page_ai_regular(name_db, section, name_user)
+        
