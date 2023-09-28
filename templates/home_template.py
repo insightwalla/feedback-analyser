@@ -811,6 +811,7 @@ class FeedBackHelper:
             try:
                get_sales_date(store_id= [store_id], date = date, time = time)
             except Exception as e:
+               st.write(e)
                st.write(self.df_with_review.iloc[index_to_modify-1]['Details'])
                # write all the informations
                st.write(self.df_with_review.iloc[index_to_modify-1])
