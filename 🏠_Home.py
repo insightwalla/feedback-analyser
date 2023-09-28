@@ -35,7 +35,7 @@ def main_prod(name_db: str, section = '', name_user = ''):
 
 # Main Loop
 if __name__ == "__main__":
-    DEBUG = True
+    DEBUG = False
     CONFIG_FILE = "config.yaml"
     MAIN = main_debug if DEBUG else main_prod
     login(render_func=MAIN,
