@@ -255,7 +255,7 @@ def final_page_ai_streaming(name_db :str, section: str, name_user: str):
     def get_text_chunks(text):
         text_splitter = CharacterTextSplitter(
             separator="\n",
-            chunk_size=1000,
+            chunk_size=4000,
             chunk_overlap=200,
             length_function=len
         )
@@ -328,7 +328,7 @@ def final_page_ai_streaming(name_db :str, section: str, name_user: str):
         llm = ChatOpenAI(streaming=True, callbacks=[MyStream(container)], openai_api_key= st.secrets["OPENAI_API_KEY"])
 
         c1,c2 = st.sidebar.columns(2)
-        if c1.button("Start Chat", use_container_width= True):
+        if c1.button("Load Reviews", use_container_width= True):
             with st.spinner("Processing"):
                 # get pdf text
                 raw_text = get_pdf_text()
@@ -352,9 +352,8 @@ def final_page_ai_streaming(name_db :str, section: str, name_user: str):
     st.components.v1.html(js)
     main()
 
-
 def final_page_ai(name_db :str, section: str, name_user: str):
-    if st.sidebar.toggle('Use Streaming', value=True):
+    if st.sidebar.toggle('Use Streaming', value=False):
         final_page_ai_streaming(name_db, section, name_user)
     else:
         final_page_ai_regular(name_db, section, name_user)
