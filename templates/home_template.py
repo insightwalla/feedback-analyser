@@ -745,7 +745,7 @@ class FeedBackHelper:
                   with columns_[i]:
                      new_value = sac.rate(
                         label = f'{columns_for_input[i]} **{value_customer}**',
-                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}', size = stars_size, half = True)
+                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}', size = stars_size, half = False)
 
                # add to the list
                results.append(new_value)
