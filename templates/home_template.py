@@ -579,13 +579,12 @@ class FeedBackHelper:
 
       # CARD
       starts_or_number = st.sidebar.radio('Starts or Number', ['Stars', 'Number'], index=0, key='starts_or_number')
-      stars_size = st.sidebar.slider(
-         label = 'Size of the star',
-         value = 20,
-         min_value = 5,
-         max_value = 30,
-         step = 1
-      )
+      size_for_stars = st.number_input(
+               label = 'size',
+               min_value=0,
+               max_value=100,
+               value=20,
+               step=1)
       import streamlit_antd_components as sac
 
       with st.form(key='my_form'):
@@ -637,7 +636,7 @@ class FeedBackHelper:
                rev_original = row['Details']
                rev_in_eng = self.translator.translate(rev_original)
                rev = rev_in_eng
-               if st.form_submit_button('Save in English language'):
+               if st.button('Save in English language'):
                   db = Database_Manager(self.db_name)
                   db.modify_details_in_db(rev_original, rev_in_eng)
                   # get restaurant name
@@ -716,6 +715,7 @@ class FeedBackHelper:
             columns_for_input = ['Overall', 'Food', 'Drink', 'Service', 'Ambience']
             columns_ = st.columns(len(columns_rating))
 
+
             results = []
             for i, col in enumerate(columns_rating):
                value_customer = float(row[col])
@@ -739,13 +739,14 @@ class FeedBackHelper:
                                                        max_value=max_val, 
                                                        value=value_new, 
                                                        step=1, 
-                                                       help = 'Select the rating for the review',
+                                                       help = f'Since the customer rated the review with a **{value_customer}**, the maximum value for the new rating is **{max_val}** Please find the scale in the sidebar',
                                                        format=None, key=f'rate{i} - {index_to_modify}')
                else:
+
                   with columns_[i]:
                      new_value = sac.rate(
                         label = f'{columns_for_input[i]} **{value_customer}**',
-                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}', size = stars_size, half = False)
+                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}', size = size_for_stars)
 
                # add to the list
                results.append(new_value)
