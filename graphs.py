@@ -193,6 +193,8 @@ def create_container_for_each_sentiment(df, df_empty = None):
             # take off the nan values
             val = df[column].values
             val = val[~np.isnan(val)]
+            # take off the zeros
+            val = val[val != 0]
             averages.append(np.mean(val))
 
          columns_scores = st.columns(len(columns_to_rescore))
@@ -229,6 +231,7 @@ def create_container_for_each_sentiment(df, df_empty = None):
          fig.add_trace(go.Scatter(x=df_day['date_for_filter'], y=[avg_score]*len(df_day), name='Average Score', mode='lines', marker_color='red', text = [avg_score]*len(df_day), opacity=0.5))
 
          c2.plotly_chart(fig, use_container_width=True)
+         st.write(df_empty)
 
 def create_pie_chart(df):
    # plot total negative, neutral, positive
