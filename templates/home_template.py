@@ -735,10 +735,11 @@ class FeedBackHelper:
                                                        help = 'Select the rating for the review',
                                                        format=None, key=f'rate{i} - {index_to_modify}')
                else:
+                  size = st.number_input(label = 'Size of stars', value = 20, min_value = 1, max_value = 25, step = 1)
                   with columns_[i]:
                      new_value = sac.rate(
                         label = f'{columns_for_input[i]} **{value_customer}**',
-                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}')
+                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}', size = size, half = True)
 
                # add to the list
                results.append(new_value)
