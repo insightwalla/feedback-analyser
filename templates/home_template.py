@@ -7,7 +7,6 @@ from database import Database_Manager, DBAmbienceKeywords, DBDrinks, DBMenu, DBP
 from ai_classifier import ArtificialWalla
 from translator_walla import Translator
 from streamlit_pills import pills
-
 # DB connection
 def fetch_data_from_db(name = 'pages/details.db'):
    db = Database_Manager(name)
@@ -75,12 +74,13 @@ def process_direct_feedback(direct_feedback: list, df: pd.DataFrame):
    # set the thumbs up and thumbs down 👍 👎 columns as False
    df_direct_feedback["👍"] = [False for i in range(len(df_direct_feedback))]
    df_direct_feedback["👎"] = [False for i in range(len(df_direct_feedback))]
-   # set suggested for friends
-   df_direct_feedback["Suggested to Friend"] = df_direct_feedback["Suggested to Friend"].apply(lambda x: 'Yes' if x == 'Yes' else 'No' if x == 'No' else 'Not Specified')
-   # set same type as df columns
-   df_direct_feedback["Reservation: Date"] = df_direct_feedback["Reservation: Date"].apply(lambda x: str(pd.to_datetime(x).date()) if x != "" else "")
-   df_direct_feedback["Reservation: Time"] = df_direct_feedback["Reservation: Time"].apply(lambda x: str(pd.to_datetime(x).time()) if x != "" else "")
    df = pd.concat([df, df_direct_feedback], axis=0)
+   # add the new columns for the scoring
+   df['New Overall Rating'] = 1
+   df['New Food Rating'] = 1
+   df['New Drink Rating'] = 1
+   df['New Service Rating'] = 1
+   df['New Ambience Rating'] = 1
    return df
       
 def preprocess_single_df(df):
@@ -113,6 +113,7 @@ def preprocess_single_df(df):
    df['New Drink Rating'] = 1
    df['New Service Rating'] = 1
    df['New Ambience Rating'] = 1
+   # set all scores to 0
    return df
       
 def create_data_from_uploaded_file():
@@ -311,8 +312,9 @@ class FeedBackHelper:
          values = [str(v) for v in values]
          # replace 5.0 with 5
          values = [v.replace('.0', '') for v in values]
-         # if all 5 then positive eles negative
-         if values == ['5', '5', '5', '5', '5']:
+         # if all 5 or 0, then the sentiment is positive
+         not_positive_values = ['1', '2', '3', '4']
+         if all(v not in not_positive_values for v in values):
             sentiment = 'POSITIVE'
             confidence = 1
          else:
@@ -501,7 +503,7 @@ class FeedBackHelper:
       self.df_without_review = self.df[self.df['Details'] == '']
 
       # 7. Rescore the dataframe without review
-      self.df_without_review = rescoring(self.df_without_review)
+      self.df_without_review = rescoring_empty(self.df_without_review)
 
       # 7.1 Filter by keywords
       key_words = expander_filters.multiselect('Keywords', keywords, default = [])
@@ -566,18 +568,21 @@ class FeedBackHelper:
                   # I need to delete all the rev from the main db as well
                   st.info('Deleted all data from database')
 
-      # 10. Show all the graphs
-      if len(self.df_with_review) > 0:
-         self.plot()
-      try:
-         index_to_modify = st.number_input('Review N.', min_value=1, max_value=len(self.df_with_review), value=1, step=1, on_change=None, key=None)
-         space_to_save_button = st.empty()
-      except:
-         st.info('No reviews for this cafe')
-         st.stop()
+
+         if len(self.df_with_review) > 0:
+            self.plot()
+         try:
+            index_to_modify = st.number_input('Review N.', min_value=1, max_value=len(self.df_with_review), value=1, step=1, on_change=None, key=None)
+         except:
+            st.info('No reviews for this cafe')
+            st.stop()
 
       # CARD
-      with st.expander('Card', expanded=True):
+      starts_or_number = st.sidebar.radio('Starts or Number', ['Stars', 'Number'], index=0, key='starts_or_number')
+      import streamlit_antd_components as sac
+
+      with st.form(key='my_form'):
+         space_to_save_button = st.empty()
          tab_card, tab_details = st.tabs(['Labels', 'Details'])
          with tab_card:
             row = self.df_with_review.iloc[index_to_modify-1]
@@ -680,7 +685,6 @@ class FeedBackHelper:
             only_drinks = [d[1] for d in all_drinks]
             select_sentiment = row['Sentiment']
 
-
             if food == '' or food == ' ':
                food = []
             else:
@@ -711,16 +715,34 @@ class FeedBackHelper:
                value_new = float(row[new_columns_rating[i]])
                # transform the value into a string
                value_customer = int(value_customer)
+               if value_customer == 0:
+                  value_customer = 'NAN'
                value_new = int(value_new)
-               new_value = columns_[i].number_input(label=f'{columns_for_input[i]} **{value_customer}**', min_value=0, max_value=10, value=value_new, step=1, format=None, key=f'rate{i} - {index_to_modify}')
+               value_map = {
+                           5: 10,
+                              4: 9,
+                                 3: 8,
+                                    2: 5,
+                                       1: 1
+                           }
+               max_val = value_map[value_customer] if value_customer != 'NAN' else 10
+               if starts_or_number == 'Number':
+                  new_value = columns_[i].number_input(label=f'{columns_for_input[i]} **{value_customer}**', 
+                                                       min_value=0, 
+                                                       max_value=max_val, 
+                                                       value=value_new, 
+                                                       step=1, 
+                                                       help = 'Select the rating for the review',
+                                                       format=None, key=f'rate{i} - {index_to_modify}')
+               else:
+                  with columns_[i]:
+                     new_value = sac.rate(
+                        label = f'{columns_for_input[i]} **{value_customer}**',
+                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}')
+
                # add to the list
                results.append(new_value)
 
-            # st.write(f'**Overall Rating**: {results[0]}')
-            # st.write(f'**Food Rating**: {results[1]}')
-            # st.write(f'**Drink Rating**: {results[2]}')
-            # st.write(f'**Service Rating**: {results[3]}')
-            # st.write(f'**Ambience Rating**: {results[4]}')
             from google_big_query import GoogleBigQuery, TransformationGoogleBigQuery
             def get_sales_date(store_id, date, time = None):
                
@@ -752,14 +774,23 @@ class FeedBackHelper:
                'Dishoom Birmingham': 8,
                'Dishoom Canary Wharf': 9
          }
+            
             # get the id from the name
             store_id = venue_map[venue]
             time = time if time != '' else None
             #get_sales_date(store_id= [store_id], date = date, time = time)   
 
+            with st.sidebar.expander('Ratings Scale', expanded=False):
+                  st.write('5 = 10')
+                  st.write('4 = 9')
+                  st.write('3 = 8')
+                  st.write('2 = 5')
+                  st.write('1 = 1')
+            import streamlit_antd_components as sac
+
+
             # now we need to save the data to the database
-            if space_to_save_button.button('Save', use_container_width=True):
-                  # get restaurant name
+            if space_to_save_button.form_submit_button('Save', use_container_width=True):
                   restaurant_name = row['Reservation: Venue']
                   name_choosen_db = 'pages/' + restaurant_name + '.db'
                   db = Database_Manager(name_choosen_db)
@@ -798,7 +829,7 @@ class FeedBackHelper:
                   st.success('Saved')
 
             # delete the review
-            if st.button('Delete', use_container_width=True):
+            if st.form_submit_button('Delete', use_container_width=True):
                   if st.button('Confirm and delete', use_container_width=True, type = 'primary'):
                      # get restaurant name
                      restaurant_name = row['Reservation: Venue']

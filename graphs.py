@@ -7,6 +7,7 @@ from collections import Counter
 import plotly.express as px
 import plotly.graph_objects as go
 from utils import *
+
 def create_graphs_no_rev(df):
    df = df.copy()
    #st.write(df)
@@ -177,17 +178,28 @@ def create_container_for_each_sentiment(df, df_empty = None):
 
          # create a dataframe with the scores
          df_scores = pd.DataFrame(scores, columns=['Score'])
-         # get average score
          avg_score = np.mean(df_scores['Score'])
 
          # create a average for each row
          df['Average Score'] = scores
 
          col1, col2 = st.columns(2)
-         col1.metric("Average Score", round(avg_score, 2))
+         col1.metric(label = "Average Score", value = f'{round(avg_score*10, 1)}%')
          col2.metric("Total Reviews", len(df))
 
-         fig = px.histogram(df_scores, x='Score', nbins=20, title='Distribution of scores')
+         # take an average of each column in the list
+         averages = []
+         for column in columns_to_rescore:
+            # take off the nan values
+            val = df[column].values
+            val = val[~np.isnan(val)]
+            averages.append(np.mean(val))
+
+         columns_scores = st.columns(len(columns_to_rescore))
+         for i,avg in enumerate(averages):
+            columns_scores[i].metric(label = columns_to_rescore[i] ,value = f'{round(avg*10, 1)}%')
+
+         fig = px.histogram(df_scores, x='Score', nbins=20, title='Distribution of scores', opacity=0.5, text_auto=True)
          fig.update_layout(
             xaxis_title_text='Score',
             yaxis_title_text='Count',
@@ -205,7 +217,7 @@ def create_container_for_each_sentiment(df, df_empty = None):
 
          fig = go.Figure()
          
-         fig.add_trace(go.Bar(x=df_day['date_for_filter'], y=df_day['Average Score'], name='Average Score'))
+         fig.add_trace(go.Bar(x=df_day['date_for_filter'], y=df_day['Average Score'], name='Average Score', text=df_day['Average Score'], opacity=0.5))
          fig.update_layout(
             xaxis_title_text='Date',
             yaxis_title_text='Average Score',
@@ -214,11 +226,9 @@ def create_container_for_each_sentiment(df, df_empty = None):
          )
          # change color of bar if the value is less than the average
          fig.update_traces(marker_color='green')
-         fig.add_trace(go.Scatter(x=df_day['date_for_filter'], y=[avg_score]*len(df_day), name='Average Score', mode='lines', marker_color='red'))
-
+         fig.add_trace(go.Scatter(x=df_day['date_for_filter'], y=[avg_score]*len(df_day), name='Average Score', mode='lines', marker_color='red', text = [avg_score]*len(df_day), opacity=0.5))
 
          c2.plotly_chart(fig, use_container_width=True)
-
 
 def create_pie_chart(df):
    # plot total negative, neutral, positive

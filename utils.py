@@ -1,18 +1,18 @@
 '''
 This are the helper functions that are used in the app:
-- lambda_for_month
-- lambda_for_week
-- lambda_for_day_name
-- lambda_for_day_part
-- _get_day_part
+- lambda_for_month    -> get the month from the date
+- lambda_for_week     -> get the week from the date
+- lambda_for_day_name -> get the day name from the date
+- lambda_for_day_part -> get the day part from the time
+- _get_day_part       -> get the day part from the hour
 
-- rescoring
+- rescoring           -> rescoring the values of the columns that are related to the ratings
 
-- clean_food
-- clean_drinks
-- clean_label
+- clean_food          -> clean the food column
+- clean_drinks        -> clean the drinks column
+- clean_label         -> clean the labels column
 
-- save to database
+- save to database    -> save the dataframe to the database
 '''
 import base64
 import random
@@ -175,6 +175,28 @@ def get_day_part(hour: str):
     return time_part
 
 def rescoring(df):
+   '''
+   This function takes the dataframe and rescoring the values of the columns that are related to the ratings
+
+   ---
+      Parameters:
+         df: dataframe
+            the dataframe that we want to apply the rescoring
+   '''
+   #st.write(df)
+   value_map = {
+               5: 10,
+                 4: 9,
+                   3: 8,
+                     2: 5,
+                       1: 1
+               }
+   columns_to_rescore = ['Feedback: Food Rating', 'Feedback: Drink Rating', 'Feedback: Service Rating', 'Feedback: Ambience Rating', 'Overall Rating']
+   df.loc[:, columns_to_rescore] = df[columns_to_rescore].replace('', 0)   # now transform the values into flaot
+   df.loc[:, columns_to_rescore] = df[columns_to_rescore].astype(float)  
+   #df.loc[:, columns_to_rescore] = df[columns_to_rescore].replace(value_map)
+   return df
+def rescoring_empty(df):
    '''
    This function takes the dataframe and rescoring the values of the columns that are related to the ratings
 
