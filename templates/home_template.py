@@ -578,14 +578,21 @@ class FeedBackHelper:
             st.stop()
 
       # CARD
-      starts_or_number = st.sidebar.radio('Starts or Number', ['Stars', 'Number'], index=0, key='starts_or_number')
-      size_for_stars = st.number_input(
-               label = 'size',
-               min_value=0,
-               max_value=100,
-               value=20,
-               step=1)
       import streamlit_antd_components as sac
+
+      with st.sidebar.expander('Ratings Scale', expanded=False):
+         st.write('5 = 10')
+         st.write('4 = 9')
+         st.write('3 = 8')
+         st.write('2 = 5')
+         st.write('1 = 1')
+         starts_or_number = st.radio('Starts or Number', ['Stars', 'Number'], index=0, key='starts_or_number')
+         size_for_stars = st.number_input(
+                  label = 'size',
+                  min_value=0,
+                  max_value=100,
+                  value=20,
+                  step=1)
 
       with st.form(key='my_form'):
          space_to_save_button = st.empty()
@@ -788,13 +795,7 @@ class FeedBackHelper:
             time = time if time != '' else None
             #get_sales_date(store_id= [store_id], date = date, time = time)   
 
-            with st.sidebar.expander('Ratings Scale', expanded=False):
-                  st.write('5 = 10')
-                  st.write('4 = 9')
-                  st.write('3 = 8')
-                  st.write('2 = 5')
-                  st.write('1 = 1')
-            import streamlit_antd_components as sac
+
 
 
             # now we need to save the data to the database
