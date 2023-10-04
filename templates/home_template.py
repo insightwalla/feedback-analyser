@@ -637,7 +637,7 @@ class FeedBackHelper:
                rev_original = row['Details']
                rev_in_eng = self.translator.translate(rev_original)
                rev = rev_in_eng
-               if st.button('Save in English language'):
+               if st.form_submit_button('Save in English language'):
                   db = Database_Manager(self.db_name)
                   db.modify_details_in_db(rev_original, rev_in_eng)
                   # get restaurant name
