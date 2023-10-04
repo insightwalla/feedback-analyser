@@ -579,6 +579,12 @@ class FeedBackHelper:
 
       # CARD
       starts_or_number = st.sidebar.radio('Starts or Number', ['Stars', 'Number'], index=0, key='starts_or_number')
+      stars_size = st.slider(
+         value = 20,
+         min_value = 5,
+         max_value = 30,
+         step = 1
+      )
       import streamlit_antd_components as sac
 
       with st.form(key='my_form'):
@@ -738,7 +744,7 @@ class FeedBackHelper:
                   with columns_[i]:
                      new_value = sac.rate(
                         label = f'{columns_for_input[i]} **{value_customer}**',
-                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}', size = 15)
+                        value=value_new, count=max_val, key = f'rate{i} - {index_to_modify}', size = stars_size)
 
                # add to the list
                results.append(new_value)
