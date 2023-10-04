@@ -579,7 +579,8 @@ class FeedBackHelper:
 
       # CARD
       starts_or_number = st.sidebar.radio('Starts or Number', ['Stars', 'Number'], index=0, key='starts_or_number')
-      stars_size = st.slider(
+      stars_size = st.sidebar.slider(
+         label = 'Size of the star'
          value = 20,
          min_value = 5,
          max_value = 30,
